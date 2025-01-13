@@ -14,6 +14,11 @@ const companySchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
+    businessType: {
+        type: [String],  // Allows multiple business types
+        enum: ['POS', 'B2C', 'B2B'],
+        required: true
+    },
     contactDetails: {
         address: {
             street: String,
@@ -46,13 +51,33 @@ const companySchema = new mongoose.Schema({
             type: Date,
             default: Date.now
         },
-        endDate: Date
+        endDate: Date,
+        nextPaymentDue: Date,
+        gracePeriodDays: {
+            type: Number,
+            default: 7
+        }
     },
     accessStatus: {
         type: String,
         enum: ['Active', 'Suspended', 'Revoked', 'Trial', 'Expired'],
         default: 'Active'
     },
+    accessStatusReason: {
+        type: String,
+        trim: true
+    },
+    paymentHistory: [
+        {
+            paymentDate: Date,
+            amountPaid: Number,
+            paymentMethod: {
+                type: String,
+                enum: ['Credit Card', 'Bank Transfer', 'PayPal', 'Cash']
+            },
+            referenceNumber: String
+        }
+    ],
     taxDetails: {
         taxId: {
             type: String,
@@ -88,7 +113,7 @@ const companySchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// Indexing
+// Index for faster lookup
 companySchema.index({ name: 1, registrationNumber: 1 });
 
 module.exports = mongoose.model('Company', companySchema);
