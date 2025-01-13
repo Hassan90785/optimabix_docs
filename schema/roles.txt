@@ -23,13 +23,11 @@ const rolesSchema = new mongoose.Schema({
                     ref: 'Modules',
                     required: true
                 },
-                operationsAllowed: [
-                    {
-                        type: String,
-                        enum: ['list', 'add', 'view', 'update', 'delete'],
-                        required: true
-                    }
-                ]
+                operationsAllowed: {
+                    type: [String],
+                    enum: ['list', 'add', 'view', 'update', 'delete'],
+                    required: true
+                }
             }
         ],
         accessStatus: {
@@ -37,9 +35,7 @@ const rolesSchema = new mongoose.Schema({
             enum: ['Active', 'Suspended', 'Revoked', 'Trial', 'Expired'],
             default: 'Active'
         },
-        validUntil: {
-            type: Date
-        }
+        validUntil: Date
     },
     // User-Specific Access Control
     userAccessControl: [
@@ -56,22 +52,19 @@ const rolesSchema = new mongoose.Schema({
                         ref: 'Modules',
                         required: true
                     },
-                    operationsAllowed: [
-                        {
-                            type: String,
-                            enum: ['list', 'add', 'view', 'update', 'delete'],
-                            required: true
-                        }
-                    ]
+                    operationsAllowed: {
+                        type: [String],
+                        enum: ['list', 'add', 'view', 'update', 'delete'],
+                        required: true
+                    }
                 }
             ],
-            isActive: {
-                type: Boolean,
-                default: true
+            accessStatus: {
+                type: String,
+                enum: ['Active', 'Suspended', 'Revoked', 'Trial', 'Expired'],
+                default: 'Active'
             },
-            validUntil: {
-                type: Date
-            }
+            validUntil: Date
         }
     ],
     createdAt: {
@@ -83,3 +76,8 @@ const rolesSchema = new mongoose.Schema({
         default: Date.now
     }
 }, { timestamps: true });
+
+// Index for optimized lookups
+rolesSchema.index({ roleName: 1, companyAccessControl: 1 });
+
+module.exports = mongoose.model('Roles', rolesSchema);
