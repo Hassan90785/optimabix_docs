@@ -9,52 +9,45 @@ const inventorySchema = new mongoose.Schema({
         ref: 'Products',
         required: true
     },
-    currentQuantity: {
-        type: Number,
-        default: 0
+    barcode: {
+        type: String,
+        required: true,
+        unique: true
     },
-    lowStockThreshold: {
-        type: Number,
-        default: 10
-    },
-    stockMovements: [
+    batches: [
         {
-            movementType: {
+            batchId: {
                 type: String,
-                enum: ['Stock In', 'Stock Out', 'Adjustment'],
                 required: true
             },
             quantity: {
                 type: Number,
                 required: true
             },
-            reason: {
-                type: String,
-                trim: true
+            purchasePrice: {
+                type: Number,
+                required: true
             },
-            date: {
+            sellingPrice: {
+                type: Number,
+                required: true
+            },
+            dateAdded: {
                 type: Date,
                 default: Date.now
-            },
-            relatedTransactionId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'POSTransactions'
-            },
-            createdBy: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
             }
         }
     ],
+    totalQuantity: {
+        type: Number,
+        default: 0
+    },
     createdAt: {
         type: Date,
         default: Date.now
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now
     }
-}, { timestamps: true });
+});
+
 
 // Indexes for faster stock lookups
 inventorySchema.index({ companyId: 1, productId: 1 });
