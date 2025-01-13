@@ -1,0 +1,94 @@
+const companySchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    legalName: {
+        type: String,
+        trim: true
+    },
+    registrationNumber: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    contactDetails: {
+        address: {
+            street: String,
+            city: String,
+            state: String,
+            postalCode: String,
+            country: String
+        },
+        phone: {
+            type: String,
+            trim: true
+        },
+        email: {
+            type: String,
+            trim: true,
+            lowercase: true
+        },
+        website: {
+            type: String,
+            trim: true
+        }
+    },
+    subscription: {
+        plan: {
+            type: String,
+            enum: ['Free', 'Trial', 'Basic', 'Premium', 'Enterprise'],
+            required: true
+        },
+        startDate: {
+            type: Date,
+            default: Date.now
+        },
+        endDate: Date
+    },
+    accessStatus: {
+        type: String,
+        enum: ['Active', 'Suspended', 'Revoked', 'Trial', 'Expired'],
+        default: 'Active'
+    },
+    taxDetails: {
+        taxId: {
+            type: String,
+            sparse: true
+        },
+        taxRegion: {
+            type: String,
+            trim: true
+        }
+    },
+    financials: {
+        currency: {
+            type: String,
+            default: 'USD'
+        },
+        defaultPaymentTerms: {
+            type: Number,
+            default: 30
+        }
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, { timestamps: true });
+
+// Indexing
+companySchema.index({ name: 1, registrationNumber: 1 });
+
+module.exports = mongoose.model('Company', companySchema);

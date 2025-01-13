@@ -30,11 +30,12 @@ const modulesSchema = new mongoose.Schema({
             }
         }
     ],
+    accessStatus: {
+        type: String,
+        enum: ['Active', 'Suspended', 'Revoked', 'Trial', 'Expired'],
+        default: 'Active'
+    },
     accessControl: {
-        isActive: {
-            type: Boolean,
-            default: true
-        },
         rolesAllowed: [
             {
                 type: mongoose.Schema.Types.ObjectId,
