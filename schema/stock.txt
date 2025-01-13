@@ -1,0 +1,63 @@
+const inventorySchema = new mongoose.Schema({
+    companyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Companies',
+        required: true
+    },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Products',
+        required: true
+    },
+    currentQuantity: {
+        type: Number,
+        default: 0
+    },
+    lowStockThreshold: {
+        type: Number,
+        default: 10
+    },
+    stockMovements: [
+        {
+            movementType: {
+                type: String,
+                enum: ['Stock In', 'Stock Out', 'Adjustment'],
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            reason: {
+                type: String,
+                trim: true
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            },
+            relatedTransactionId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'POSTransactions'
+            },
+            createdBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }
+        }
+    ],
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
+}, { timestamps: true });
+
+// Indexes for faster stock lookups
+inventorySchema.index({ companyId: 1, productId: 1 });
+inventorySchema.index({ 'stockMovements.date': -1 });
+
+module.exports = mongoose.model('Inventory', inventorySchema);
